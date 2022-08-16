@@ -1,4 +1,4 @@
-# qeed_remake
+# Qeed+
 
 A new QEED Flutter project.
 
