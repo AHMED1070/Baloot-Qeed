@@ -1,10 +1,18 @@
+// ignore_for_file: non_constant_identifier_names
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
+import 'package:qeed_remake_2/mediaQ.dart';
 
 void main() {
-  runApp(const MaterialApp(
-    home: MyApp(),
-    debugShowCheckedModeBanner: false,
-  ));
+  WidgetsFlutterBinding.ensureInitialized();
+
+  runApp(
+    const MaterialApp(
+      home: MyApp(),
+      debugShowCheckedModeBanner: false,
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -17,16 +25,19 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   var lna_array = [0];
   var lhm_array = [0];
+  double containerHeight = 255;
 
   Color bgColor = const Color(0xff674C6D),
-      RButtomColor = Color(0xffFAFE73),
-      UButtomColor = Color(0xffFFE1EC),
-      Row1Color = Color(0xffE8CDF6),
-      Row2Color = Color(0xffE8CDF6);
+      RButtomColor = const Color(0xffFAFE73),
+      UButtomColor = const Color(0xffFFE1EC),
+      Row1Color = const Color(0xffE8CDF6),
+      Row2Color = const Color(0xffE8CDF6);
 
   late TextEditingController lna, lhm;
+
   int lnaSum = 0;
   int lhmSum = 0;
+
   var arrow = [
     Icons.arrow_circle_up,
     Icons.arrow_circle_left,
@@ -38,15 +49,23 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(15),
-          child: buildMayColumn(),
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+    SizeConfig().init(context);
+
+    return KeyboardDismissOnTap(
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: buildMayColumn(),
+          ),
         ),
+        backgroundColor: bgColor,
       ),
-      backgroundColor: bgColor,
     );
   }
 
@@ -61,54 +80,61 @@ class _MyAppState extends State<MyApp> {
   }
 
   inputRow() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Row1Color,
-        borderRadius: BorderRadius.circular(25),
-      ),
-      height: 150,
-      width: double.maxFinite,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 17.5),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: const [
-                Text(
-                  "لنا",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
-                ),
-                //arrowIndecator(),
-                SizedBox(width: 25),
-                Text(
-                  "لهم",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
-                )
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(child: myTextField(lna)),
-                const SizedBox(width: 25),
-                Expanded(child: myTextField(lhm))
-              ],
-            ),
-          ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Row1Color,
+          borderRadius: BorderRadius.circular(25),
+        ),
+        height: SizeConfig.screenHeight / 5.77,
+        width: double.maxFinite,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 17.5),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: const [
+                  Text(
+                    "لنا",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                  ),
+                  //arrowIndecator(),
+                  SizedBox(width: 25),
+                  Text(
+                    "لهم",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                  )
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(child: myTextField(lna)),
+                  const SizedBox(width: 25),
+                  Expanded(child: myTextField(lhm))
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
   recordRow() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 17.0),
-      child: Expanded(
-        child: Container(
-          height: 515,
+    return KeyboardVisibilityBuilder(builder: (context, visible) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 2.0),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.fastLinearToSlowEaseIn,
+          height: visible
+              ? (SizeConfig.screenHeight / 1.59) - SizeConfig.keyboradHeight
+              : SizeConfig.screenHeight / 1.59,
           width: double.maxFinite,
           decoration: BoxDecoration(
             color: Row2Color,
@@ -123,18 +149,18 @@ class _MyAppState extends State<MyApp> {
                   children: [
                     Text(
                       lnaSum.toString(),
-                      style:
-                          TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          fontSize: 40, fontWeight: FontWeight.bold),
                     ),
                     Text(
                       lhmSum.toString(),
-                      style:
-                          TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          fontSize: 40, fontWeight: FontWeight.bold),
                     )
                   ],
                 ),
-                Divider(),
-                SizedBox(height: 10),
+                const Divider(),
+                const SizedBox(height: 10),
                 Expanded(
                   child: ListView.builder(
                       scrollDirection: Axis.vertical,
@@ -146,18 +172,21 @@ class _MyAppState extends State<MyApp> {
             ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   buttomRow() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        Expanded(child: recordButtom()),
-        SizedBox(width: 12.5),
-        undowButtom(),
-      ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Expanded(child: recordButtom()),
+          const SizedBox(width: 12.5),
+          undowButtom(),
+        ],
+      ),
     );
   }
 
@@ -167,22 +196,26 @@ class _MyAppState extends State<MyApp> {
       textAlign: TextAlign.center,
       controller: ctrl,
       keyboardType: TextInputType.number,
+      style: const TextStyle(fontSize: 30),
       decoration: InputDecoration(
-          hintText: "0",
-          hintStyle: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
+        hintText: "0",
+        contentPadding: const EdgeInsets.all(15),
+        hintStyle: const TextStyle(
+          fontSize: 30,
+          fontWeight: FontWeight.bold,
+        ),
+        border: OutlineInputBorder(
+          borderSide: BorderSide(color: bgColor),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
+          borderSide: BorderSide(
+            color: bgColor,
+            width: 2,
           ),
-          border: OutlineInputBorder(
-            borderSide: BorderSide(color: bgColor),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(15),
-              borderSide: BorderSide(
-                color: bgColor,
-                width: 2,
-              ))),
+        ),
+      ),
     );
   }
 
@@ -192,7 +225,7 @@ class _MyAppState extends State<MyApp> {
         color: RButtomColor,
         borderRadius: BorderRadius.circular(20),
       ),
-      height: 90,
+      height: SizeConfig.screenHeight / 9.75,
       width: 10,
       child: MaterialButton(
         onPressed: () {
@@ -206,7 +239,7 @@ class _MyAppState extends State<MyApp> {
 
   undowButtom() {
     return Container(
-      height: 90,
+      height: SizeConfig.screenHeight / 9.75,
       width: 90,
       decoration: BoxDecoration(
           color: UButtomColor, borderRadius: BorderRadius.circular(20)),
@@ -270,7 +303,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     lna = TextEditingController();
     lhm = TextEditingController();
@@ -278,7 +310,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     lna.dispose();
     lhm.dispose();
