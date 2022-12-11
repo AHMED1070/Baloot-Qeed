@@ -98,13 +98,13 @@ class _MyAppState extends State<MyApp> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: const [
                   Text(
-                    "لنا",
+                    "لهم",
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
                   ),
                   //arrowIndecator(),
                   SizedBox(width: 25),
                   Text(
-                    "لهم",
+                    "لنا",
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
                   )
                 ],
@@ -192,6 +192,7 @@ class _MyAppState extends State<MyApp> {
 
   myTextField(TextEditingController ctrl) {
     return TextField(
+      onEditingComplete: recordFunc,
       cursorColor: bgColor,
       textAlign: TextAlign.center,
       controller: ctrl,
@@ -231,8 +232,8 @@ class _MyAppState extends State<MyApp> {
         onPressed: () {
           recordFunc();
         },
-        child:
-            const Text("Record", style: TextStyle(fontWeight: FontWeight.bold)),
+        child: const Text("سجل",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
       ),
     );
   }
@@ -322,7 +323,7 @@ class _MyAppState extends State<MyApp> {
         return Expanded(
           child: AlertDialog(
             title: Text(
-              "Game Over !",
+              "!انتهت السكة ",
               style: TextStyle(color: bgColor, fontWeight: FontWeight.bold),
             ),
             actions: [
@@ -332,13 +333,13 @@ class _MyAppState extends State<MyApp> {
                     restartGameFunc();
                   },
                   child: Text(
-                    "Start New Game ",
+                    "سكة جديدة  ",
                     style: TextStyle(color: bgColor),
                   )),
               //
               MaterialButton(
                   child: Text(
-                    "Undo",
+                    "تراجع",
                     style: TextStyle(color: bgColor),
                   ),
                   onPressed: () {
@@ -359,7 +360,7 @@ class _MyAppState extends State<MyApp> {
         return Expanded(
           child: AlertDialog(
             title: Text(
-              "Undo the Last record ?",
+              "تراجع ؟ ",
               style: TextStyle(color: bgColor, fontWeight: FontWeight.bold),
             ),
             actions: [
@@ -370,14 +371,14 @@ class _MyAppState extends State<MyApp> {
                     Navigator.pop(context);
                   },
                   child: Text(
-                    "Yes, Undo",
-                    style: TextStyle(color: bgColor),
+                    "نعم",
+                    style: TextStyle(color: bgColor, fontSize: 20),
                   )),
               //
               MaterialButton(
                   child: Text(
-                    "Cancel",
-                    style: TextStyle(color: bgColor),
+                    "الغاء",
+                    style: TextStyle(color: bgColor, fontSize: 20),
                   ),
                   onPressed: () {
                     Navigator.pop(context);
@@ -391,17 +392,19 @@ class _MyAppState extends State<MyApp> {
 
   restartGameFunc() {
     setState(() {
-      lna_array = [];
-      lhm_array = [];
+      lna_array = [0];
+      lhm_array = [0];
       Navigator.pop(context);
       lnaSum = lhmSum = 0;
     });
   }
 
   recordFunc() {
+    FocusScope.of(context).requestFocus(FocusNode());
     setState(() {
       if (lna.text == "" && lhm.text == "") {
         // dont add anything if both 0
+        return;
       } else {
         if (lna.text == "") {
           lna_array.add(0);
